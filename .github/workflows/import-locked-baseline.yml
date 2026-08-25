@@ -20,6 +20,13 @@ jobs:
       - name: Download approved Tony's Dockside client-review build
         run: curl -fsSL --compressed 'https://tonys-dockside-review-assets-ieqlvky6z.vercel.app/' -o index.html
 
+      - name: Inspect downloaded client build
+        run: |
+          sha256sum index.html
+          wc -c index.html
+          head -c 120 index.html
+          echo
+
       - name: Verify approved client-review checksum
         run: |
           echo '27af4233e3efa8ccab717c2191c743d700b9f7b9679fe82fa6f198e4cff9bf4c  index.html' | sha256sum -c -
