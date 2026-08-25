@@ -1,0 +1,33 @@
+name: Import Locked Baseline V2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/import-locked-baseline.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download locked Tony's Dockside review build
+        run: curl -fsSL --compressed 'https://tonys-dockside-review-assets-ieqlvky6z.vercel.app/' -o index.html
+
+      - name: Verify locked baseline checksum
+        run: |
+          echo '2cc1b7ad9c682fa28136e0cea882b64b549b7f5e6385e1d59383df14165d1a3f  index.html' | sha256sum -c -
+
+      - name: Commit locked baseline
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || git commit -m 'Deploy Tony Dockside Locked Baseline V2'
+          git push
