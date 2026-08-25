@@ -18,12 +18,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Download approved Tony's Dockside client-review build
-        run: |
-          curl -fsSL --compressed \
-            --cookie-jar /tmp/vercel.cookies \
-            --cookie /tmp/vercel.cookies \
-            'https://tonys-dockside-review-assets-ieqlvky6z.vercel.app/?_vercel_share=HY4rvCrDCDciUZ3pdSjJBr87Hi0jD7Bp' \
-            -o index.html
+        run: curl -fsSL --compressed 'https://tonys-dockside-review-assets.vercel.app/' -o index.html
 
       - name: Inspect downloaded client build
         run: |
