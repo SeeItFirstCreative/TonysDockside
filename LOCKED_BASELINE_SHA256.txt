@@ -1,0 +1,11 @@
+Tony's Dockside Locked Baseline V2
+
+Authoritative production file: index.html
+Size: 3441570 bytes
+SHA-256: 2cc1b7ad9c682fa28136e0cea882b64b549b7f5e6385e1d59383df14165d1a3f
+
+Verified against both user-supplied files:
+- TONYS-DOCKSIDE-LOCKED-BASELINE-V2.html
+- index.html
+
+These two source files are byte-for-byte identical.
