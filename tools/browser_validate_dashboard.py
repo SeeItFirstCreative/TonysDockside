@@ -15,6 +15,9 @@ SITES = [
     ('website-03','command',"Know what's wrong. Know what happens next."),
 ]
 
+def norm(s):
+    return ' '.join((s or '').split())
+
 opts=Options()
 opts.add_argument('--headless=new')
 opts.add_argument('--no-sandbox')
@@ -84,7 +87,7 @@ for i,r in enumerate(reports):
 errors=[]
 for r,(folder,expected,h1_expected) in zip(reports,SITES):
     if r['concept']!=expected or r['active']!=expected: errors.append(f'{folder}: wrong concept')
-    if h1_expected not in r['h1']: errors.append(f'{folder}: unexpected H1 {r["h1"]!r}')
+    if norm(h1_expected) != norm(r['h1']): errors.append(f'{folder}: unexpected H1 {r["h1"]!r}')
     if r['broken_images']: errors.append(f'{folder}: broken images {r["broken_images"]}')
     if r['remote_resources']: errors.append(f'{folder}: remote resources {r["remote_resources"]}')
     if r['missing_internal_anchors']: errors.append(f'{folder}: missing anchors {r["missing_internal_anchors"]}')
