@@ -1,0 +1,42 @@
+name: Build Tony's Dockside Presentation Dashboard All Variations Corrected
+on:
+  push:
+    branches: [dashboard-package-build]
+    paths: ['tools/package_dashboard_all.py','.github/workflows/package-dashboard-v6.yml']
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install --disable-pip-version-check beautifulsoup4 requests pillow selenium
+      - name: Build all independent sites
+        run: PYTHONPATH=tools python tools/package_dashboard_all.py index.html dashboard-output --zip intermediate.zip
+      - name: Repackage with websites and logo-boards at ZIP root
+        run: |
+          python - <<'PY'
+          import zipfile, pathlib
+          root=pathlib.Path('dashboard-output/extracted-test/client-project')
+          out=pathlib.Path('dashboard-output/Tonys-Dockside-Presentation-Dashboard.zip')
+          with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+            for p in root.rglob('*'):
+              if p.is_file(): z.write(p,p.relative_to(root))
+          with zipfile.ZipFile(out) as z:
+            names=z.namelist()
+            assert any(x.startswith('websites/') for x in names)
+            assert any(x.startswith('logo-boards/') for x in names)
+            assert not any(x.startswith('client-project/') for x in names)
+          PY
+      - name: Browser validate every independent website
+        run: python tools/browser_validate_all.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Tonys-Dockside-Presentation-Dashboard-All-Variations
+          path: |
+            dashboard-output/Tonys-Dockside-Presentation-Dashboard.zip
+            dashboard-output/POST_EXTRACT_VALIDATION.json
+            dashboard-output/browser-test-all/BROWSER_VALIDATION.json
+          retention-days: 1
