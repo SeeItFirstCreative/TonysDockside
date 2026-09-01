@@ -1,0 +1,42 @@
+name: Build Tony's Dockside Presentation Dashboard Package Final Pass
+
+on:
+  push:
+    branches:
+      - dashboard-package-build
+    paths:
+      - '.github/workflows/package-dashboard-v4.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package-and-browser-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install validation dependencies
+        run: python -m pip install --disable-pip-version-check beautifulsoup4 requests pillow selenium
+      - name: Build and post-extract validate dashboard ZIP
+        run: python tools/package_dashboard_v2.py index.html dashboard-output --zip Tonys-Dockside-Presentation-Dashboard.zip
+      - name: Confirm Chrome
+        run: google-chrome --version
+      - name: Direct-file browser validation
+        run: python tools/browser_validate_dashboard.py
+      - name: Upload final browser-validated package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tonys-Dockside-Presentation-Dashboard-Final
+          path: |
+            dashboard-output/Tonys-Dockside-Presentation-Dashboard.zip
+            dashboard-output/VALIDATION.json
+            dashboard-output/POST_EXTRACT_VALIDATION.json
+            dashboard-output/browser-test/BROWSER_VALIDATION.json
+            dashboard-output/browser-test/*.png
+          if-no-files-found: error
+          retention-days: 1
